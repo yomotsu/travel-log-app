@@ -5,6 +5,6 @@ declare module 'three.meshline' {
     setPoints(points: number[] | number[][]): void;
   }
   export class MeshLineMaterial extends THREE.Material {
-    constructor(parameters?: Partial<THREE.MaterialParameters>);
+  constructor(parameters?: Partial<THREE.MeshBasicMaterialParameters> & { lineWidth: number, sizeAttenuation: boolean });
   }
 }

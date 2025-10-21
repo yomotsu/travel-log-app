@@ -331,7 +331,7 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 	const lineMaterialInner1 = useRef<MeshLineMaterial | null>(null);
 
 	useEffect(() => {
-		// 生成前に前回分をdispose
+		// 生成前に前回分をdisposeし、ref.currentをnullに
 		[
 			lineMeshLineOuter0,
 			lineMaterialOuter0,
@@ -345,6 +345,7 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 			if (ref.current) {
 				if ('geometry' in ref.current) ref.current.geometry.dispose();
 				if ('dispose' in ref.current) ref.current.dispose();
+				ref.current = null;
 			}
 		});
 
@@ -388,6 +389,7 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 				if (ref.current) {
 					if ('geometry' in ref.current) ref.current.geometry.dispose();
 					if ('dispose' in ref.current) ref.current.dispose();
+					ref.current = null;
 				}
 			});
 		};
@@ -461,14 +463,26 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 	// 3. 各polylineを描画
 	return (
 		<>
+			{/*
+				線の分割地点に応じて、頂点数（bufferのサイズ）が変わるため、
+				頂点数に応じて毎回bufferGeometryを再生成する必要がある。key属性で対応
+			*/}
 			{polylines.length > 0 && (
 				<Fragment key={0}>
 					<mesh>
-						<bufferGeometry attach="geometry" {...lineMeshLineOuter0.current!.geometry} />
+						<bufferGeometry
+							attach="geometry"
+							key={lineMeshLineOuter0.current?.geometry.id}
+							{...lineMeshLineOuter0.current!.geometry}
+						/>
 						<primitive object={lineMaterialOuter0.current!} attach="material" />
 					</mesh>
 					<mesh>
-						<bufferGeometry attach="geometry" {...lineMeshLineInner0.current!.geometry} />
+						<bufferGeometry
+							attach="geometry"
+							key={lineMeshLineInner0.current?.geometry.id}
+							{...lineMeshLineInner0.current!.geometry}
+						/>
 						<primitive object={lineMaterialInner0.current!} attach="material" />
 					</mesh>
 				</Fragment>
@@ -476,11 +490,19 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 			{polylines.length > 1 && (
 				<Fragment key={1}>
 					<mesh>
-						<bufferGeometry attach="geometry" {...lineMeshLineOuter1.current!.geometry} />
+						<bufferGeometry
+							attach="geometry"
+							key={lineMeshLineOuter1.current?.geometry.id}
+							{...lineMeshLineOuter1.current!.geometry}
+						/>
 						<primitive object={lineMaterialOuter1.current!} attach="material" />
 					</mesh>
 					<mesh>
-						<bufferGeometry attach="geometry" {...lineMeshLineInner1.current!.geometry} />
+						<bufferGeometry
+							attach="geometry"
+							key={lineMeshLineInner1.current?.geometry.id}
+							{...lineMeshLineInner1.current!.geometry}
+						/>
 						<primitive object={lineMaterialInner1.current!} attach="material" />
 					</mesh>
 				</Fragment>

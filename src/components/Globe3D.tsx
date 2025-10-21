@@ -207,8 +207,8 @@ function FlightArc({ from, to }: { from: LatLng; to: LatLng }) {
 
 	// Outer
 	useEffect(() => {
-		if (materialOuter.current) materialOuter.current.dispose();
 		if (meshLineOuter.current) meshLineOuter.current.geometry.dispose();
+		if (materialOuter.current) materialOuter.current.dispose();
 		const line = new MeshLine();
 		line.setPoints(points);
 		const mat = new MeshLineMaterial({ color: '#222', lineWidth: 0.007, sizeAttenuation: false, depthTest: false });
@@ -247,7 +247,7 @@ function FlightArc({ from, to }: { from: LatLng; to: LatLng }) {
 		});
 	});
 	// 滑らかな補間位置・向き
-	const seg = progress * (pointsArr.length - 1);
+	const seg = progress * (pointsArr.length - 1); // FYI: ARC_SEGMENTS === pointsArr.length - 1
 	const idx = Math.floor(seg);
 	const t = seg - idx;
 	const curr = pointsArr[idx];
@@ -258,12 +258,13 @@ function FlightArc({ from, to }: { from: LatLng; to: LatLng }) {
 		curr[1] + (next[1] - curr[1]) * t,
 		curr[2] + (next[2] - curr[2]) * t,
 	];
+
 	// 進行方向ベクトル（補間位置→次点）
 	const dirVec = new Vector3(next[0] - curr[0], next[1] - curr[1], next[2] - curr[2]).normalize();
 	// 地表方向ベクトル（補間位置→中心）
 	const downVec = new Vector3(pos[0], pos[1], pos[2]).normalize();
 	// 進行方向（Z-）・地表側（Y+）に合わせた回転行列
-	const quaternion = useMemo(() => {
+	const quaternion = (() => {
 		const forward = dirVec;
 		const up = downVec;
 		const right = new Vector3().crossVectors(up, forward).normalize();
@@ -271,7 +272,7 @@ function FlightArc({ from, to }: { from: LatLng; to: LatLng }) {
 		m.makeBasis(right, up, forward);
 		const q = new Quaternion().setFromRotationMatrix(m);
 		return q;
-	}, [dirVec.x, dirVec.y, dirVec.z, downVec.x, downVec.y, downVec.z]);
+	})();
 
 	if (!meshLineOuter.current || !materialOuter.current || !meshLineInner.current || !materialInner.current) return null;
 
@@ -442,7 +443,7 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 	// 地表方向ベクトル（補間位置→中心）
 	const downVec = new Vector3(0, 0, 1); // 平面なのでZ+が地表方向
 	// 進行方向（Z-）・地表側（Y+）に合わせた回転行列
-	const quaternion = useMemo(() => {
+	const quaternion = ( () => {
 		const forward = dirVec;
 		const up = downVec;
 		const right = new Vector3().crossVectors(up, forward).normalize();
@@ -450,7 +451,7 @@ function FlightLine({ from, to }: { from: LatLng; to: LatLng }) {
 		m.makeBasis(right, up, forward);
 		const q = new Quaternion().setFromRotationMatrix(m);
 		return q;
-	}, [dirVec.x, dirVec.y, dirVec.z]);
+	} )();
 
 	if ((polylines.length > 2) ||
 		(polylines.length > 0 && (!lineMeshLineOuter0.current || !lineMaterialOuter0.current || !lineMeshLineInner0.current || !lineMaterialInner0.current)) ||

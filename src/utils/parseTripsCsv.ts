@@ -33,6 +33,24 @@ const AIR_PORT_DATA: Record<string, { latLng: LatLng }> = {
   },
 };
 
+const nameMap = {
+  '晃浩': '🧑🏻',
+  '茜': '👩🏻',
+  '朝陽': '🧒🏻',
+} as const;
+
+function maskPersonNames( names: string ): string {
+
+  for ( const name of Object.keys( nameMap ) ) {
+
+    names = names.replaceAll( name, nameMap[ name as keyof typeof nameMap ] );
+
+  }
+
+  return names;
+
+}
+
 export function parseTripsCsv( csv: string ): Trip[] {
 
   // 1. 「"」内の「,」は__COMMA__に置換する
@@ -49,7 +67,7 @@ export function parseTripsCsv( csv: string ): Trip[] {
     const cols = line.split( ',' );
     const regionName = cols[ 0 ].replaceAll( __COMMA__, ',' );
     const photoUrl = cols[ 1 ].replaceAll( __COMMA__, ',' );
-    const members = cols[ 2 ].split( __SEPARATOR__ ).map( s => s.replaceAll( __COMMA__, ',' ).trim() );
+    const members = maskPersonNames( cols[ 2 ] ).split( __SEPARATOR__ );
     const startDate = cols[ 3 ];
     const hotelNames = cols[ 4 ].split( __SEPARATOR__ ).map( s => s.replaceAll( __COMMA__, ',' ).trim() );
     const hotelNights = cols[ 5 ].split( __SEPARATOR__ ).map( s => parseInt( s.trim(), 10 ) );

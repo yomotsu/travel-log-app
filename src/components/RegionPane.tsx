@@ -19,19 +19,19 @@ export const RegionPane = ( { onSelectTrip, trips }: Props ) => {
 							className="flex hover:bg-gray-100 px-2 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left transition"
 							onClick={ () => onSelectTrip && onSelectTrip( i ) }
 						>
-							<span>
+							<span className="flex-grow">
 								<span className="block font-semibold text-gray-900 text-base">{ trip.regionName }</span>
 								<span className="block text-gray-400 text-xs">旅行日: { trip.startDate }</span>
-								<span className="block text-gray-400 text-xs">参加: { trip.members.join(', ') }</span>
+								<span className="block text-gray-400 text-xs">参加: { trip.members.join(' ') }</span>
 							</span>
 							{ trip.photoUrl && (
 								<span className="block ml-2 w-16 aspect-square shrink-0">
-									{/* <img
+									<img
 										className="rounded w-full h-full object-cover"
 										src={ trip.photoUrl }
 										alt=""
 										loading="lazy"
-									/> */}
+									/>
 								</span>
 							) }
 						</button>

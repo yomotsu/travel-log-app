@@ -6,7 +6,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSU__UCrHii67L7
 export default async function HomePage() {
 	const res = await fetch( CSV_URL );
 	const csvText = await res.text();
-	const trips = parseTripsCsv( csvText );
+	const trips = parseTripsCsv( csvText ).reverse();
 
 	return (
 		<Home trips={ Array.isArray( trips ) ? trips : [] } />
